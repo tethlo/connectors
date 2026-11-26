@@ -31,7 +31,8 @@ export interface ServerOptions {
 
 export function apiFromEnv(env: NodeJS.ProcessEnv = process.env, overrides: ApiOverrides = {}): ClinikoApi {
   const key = env.CLINIKO_API_KEY ?? "";
-  const contact = env.CLINIKO_CONTACT_EMAIL ? ` (${env.CLINIKO_CONTACT_EMAIL})` : "";
+  // Cliniko may block requests whose User-Agent lacks a name and a valid contact email: default to the maintainer's.
+  const contact = ` (${env.CLINIKO_CONTACT_EMAIL || "hello@tethlo.com"})`;
   return new ClinikoApi(
     new HttpClient({
       service: "Cliniko",
