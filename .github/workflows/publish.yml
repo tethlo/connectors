@@ -68,7 +68,8 @@ jobs:
       - name: Check npm identity
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: echo "npm user for NPM_TOKEN: $(npm whoami 2>&1 || true)"
+        run: |
+          echo "npm user for NPM_TOKEN: $(npm whoami 2>&1 || true)"
       - name: Install mcp-publisher
         if: ${{ !inputs.dry_run && inputs.step == '2-mcp-registry' }}
         run: |
