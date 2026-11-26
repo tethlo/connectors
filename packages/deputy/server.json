@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-deputy",
+  "title": "Tethlo MCP server for Deputy (unofficial)",
+  "description": "Unofficial. Deputy for AI agents: roster, open shifts, leave approvals, timesheet hours.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/deputy"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-deputy",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "DEPUTY_HOST",
+          "description": "Your Deputy install, e.g. yourcompany.na.deputy.com. In remote mode this is a server setting.",
+          "isRequired": true,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "DEPUTY_ACCESS_TOKEN",
+          "description": "Deputy permanent access token.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "DEPUTY_BASE_URL",
+          "description": "Override of the API base URL. Default: https://<DEPUTY_HOST>/api/v1",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

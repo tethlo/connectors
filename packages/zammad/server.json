@@ -1,0 +1,39 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-zammad",
+  "title": "Tethlo MCP server for Zammad (unofficial)",
+  "description": "Unofficial. Zammad helpdesk for AI agents: tickets, queue overview, notes, replies.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/zammad"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-zammad",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ZAMMAD_URL",
+          "description": "Your Zammad address, e.g. https://support.example.com. In remote mode this is a server setting.",
+          "isRequired": true,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "ZAMMAD_TOKEN",
+          "description": "Zammad access token (Profile > Token Access, permission ticket.agent).",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

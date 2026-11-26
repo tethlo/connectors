@@ -1,0 +1,88 @@
+# Publishes one package (or all of them) by hand: Actions > Publish > Run workflow.
+# 1. typecheck, tests and build; 2. npm with provenance (secret NPM_TOKEN); 3. the official MCP Registry
+# (mcp-publisher, GitHub OIDC login: no secret, namespace io.github.tethlo).
+# dry_run (default) runs every check and `npm publish --dry-run`, and skips the MCP Registry.
+# A version that is already on npm is skipped: bump "version" in package.json and server.json to release again.
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package folder under packages/, or "all"'
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - cliniko
+          - deputy
+          - healthchecks-io
+          - housecall-pro
+          - invoice-ninja
+          - recruitee
+          - veeqo
+          - zammad
+      dry_run:
+        description: 'Dry run: nothing is published (untick to publish)'
+        type: boolean
+        required: true
+        default: true
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # npm provenance and MCP Registry login (GitHub OIDC)
+
+env:
+  MCP_PUBLISHER_VERSION: v1.8.16
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - name: Install mcp-publisher
+        if: ${{ !inputs.dry_run }}
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PACKAGE: ${{ inputs.package }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ "$PACKAGE" = "all" ]; then
+            LIST=$(ls packages)
+          else
+            LIST="$PACKAGE"
+          fi
+          for slug in $LIST; do
+            dir="packages/$slug"
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            test "$(node -p "require('./$dir/server.json').version")" = "$version"
+            test "$(node -p "require('./$dir/server.json').packages[0].version")" = "$version"
+            echo "::group::$name@$version"
+            if [ "$DRY_RUN" = "true" ]; then
+              (cd "$dir" && npm publish --access public --dry-run)
+            elif npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already on npm: skipped (bump the version to release again)."
+            else
+              (cd "$dir" && npm publish --access public --provenance)
+              (cd "$dir" && "$GITHUB_WORKSPACE/mcp-publisher" publish)
+            fi
+            echo "::endgroup::"
+          done

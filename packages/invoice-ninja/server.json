@@ -1,0 +1,39 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-invoice-ninja",
+  "title": "Tethlo MCP server for Invoice Ninja (unofficial demo)",
+  "description": "Unofficial demo. Invoice Ninja for AI agents: clients, invoices, payments, receivables.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/invoice-ninja"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-invoice-ninja",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "INVOICENINJA_API_TOKEN",
+          "description": "Invoice Ninja API token (Settings > Account Management > API Tokens).",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "INVOICENINJA_BASE_URL",
+          "description": "Optional: a self-hosted instance, e.g. https://invoices.example.com. Default: https://invoicing.co",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

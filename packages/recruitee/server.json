@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-recruitee",
+  "title": "Tethlo MCP server for Recruitee (unofficial)",
+  "description": "Unofficial. Recruitee ATS for AI agents: jobs, pipelines, candidates, notes, stage moves.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/recruitee"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-recruitee",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "RECRUITEE_COMPANY_ID",
+          "description": "Recruitee company id (shown with the personal API token).",
+          "isRequired": true,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "RECRUITEE_API_TOKEN",
+          "description": "Recruitee personal API token.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "RECRUITEE_BASE_URL",
+          "description": "Override of the API base URL. Default: https://api.recruitee.com",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

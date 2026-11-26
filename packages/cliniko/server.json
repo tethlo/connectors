@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-cliniko",
+  "title": "Tethlo MCP server for Cliniko (unofficial)",
+  "description": "Unofficial. Cliniko for AI agents: patient lookup, diary, availability, bookings.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/cliniko"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-cliniko",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "CLINIKO_API_KEY",
+          "description": "Cliniko API key (My Info > Manage API keys).",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "CLINIKO_CONTACT_EMAIL",
+          "description": "Your email, added to the User-Agent as Cliniko asks API clients to identify themselves.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "CLINIKO_BASE_URL",
+          "description": "Override of the API base URL. Default: derived from the key, e.g. https://api.uk1.cliniko.com/v1",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tethlo/mcp-for-housecall-pro",
+  "title": "Tethlo MCP server for Housecall Pro (unofficial)",
+  "description": "Unofficial. Housecall Pro for AI agents: customers, jobs, dispatch board, estimates, notes.",
+  "repository": {
+    "url": "https://github.com/tethlo/connectors",
+    "source": "github",
+    "subfolder": "packages/housecall-pro"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tethlo/mcp-for-housecall-pro",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "HOUSECALLPRO_API_KEY",
+          "description": "Housecall Pro API key (My Apps > API Key Management).",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "HOUSECALLPRO_BASE_URL",
+          "description": "Override of the API base URL. Default: https://api.housecallpro.com",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

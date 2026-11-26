@@ -1,0 +1,63 @@
+{
+  "name": "@tethlo/mcp-for-healthchecks-io",
+  "version": "0.1.0",
+  "description": "Unofficial MCP server for Healthchecks.io (demo): watch, diagnose and manage your cron job monitors from AI agents.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Tethlo (https://tethlo.com)",
+  "homepage": "https://github.com/tethlo/connectors/tree/main/packages/healthchecks-io#readme",
+  "bugs": {
+    "url": "https://github.com/tethlo/connectors/issues"
+  },
+  "mcpName": "io.github.tethlo/mcp-for-healthchecks-io",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "ai-agents",
+    "claude",
+    "healthchecks",
+    "cron",
+    "monitoring",
+    "demo",
+    "tethlo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tethlo/connectors.git",
+    "directory": "packages/healthchecks-io"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "bin": {
+    "tethlo-mcp-for-healthchecks-io": "dist/src/stdio.js"
+  },
+  "files": [
+    "dist/src",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "scripts": {
+    "start": "node src/stdio.ts",
+    "start:http": "node src/http.ts",
+    "build": "tsc -p tsconfig.json --noEmit false --outDir dist",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test \"test/*.test.ts\"",
+    "eval:claude": "node eval/run-claude.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "1.6.0",
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
