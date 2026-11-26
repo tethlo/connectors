@@ -102,13 +102,14 @@ test('the excluded connectors are not in this batch', () => {
   }
 });
 
-test('workflows: publish needs a manual trigger and OIDC, and holds no secret value', () => {
+test('workflows: publish is manual, staged on npm, then the MCP Registry with OIDC; no secret value', () => {
   const publish = read(REPO, '.github/workflows/publish.yml');
   assert.match(publish, /workflow_dispatch:/);
   assert.match(publish, /id-token: write/);
   assert.match(publish, /secrets\.NPM_TOKEN/);
   assert.match(publish, /mcp-publisher login github-oidc/);
-  assert.match(publish, /npm publish --access public --provenance/);
+  assert.match(publish, /npm stage publish --access public/);
+  assert.match(publish, /2-mcp-registry/);
   for (const file of ['ci.yml', 'publish.yml']) {
     assert.doesNotMatch(read(REPO, '.github/workflows', file), /npm_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}/, file);
   }

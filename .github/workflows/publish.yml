@@ -1,8 +1,11 @@
-# Publishes one package (or all of them) by hand: Actions > Publish > Run workflow.
-# 1. typecheck, tests and build; 2. npm with provenance (secret NPM_TOKEN); 3. the official MCP Registry
-# (mcp-publisher, GitHub OIDC login: no secret, namespace io.github.tethlo).
-# dry_run (default) runs every check and `npm publish --dry-run`, and skips the MCP Registry.
-# A version that is already on npm is skipped: bump "version" in package.json and server.json to release again.
+# Publishes one package (or all of them) by hand: Actions > Publish > Run workflow. Two steps, because npm now
+# requires staged publishing for tokens (E_STAGE_REQUIRED): a human approves each version on npmjs.com with 2FA.
+#   step "1-npm-stage": typecheck, tests, build, then `npm stage publish` (secret NPM_TOKEN). Nothing is public until
+#                       the maintainer approves it on npmjs.com (or `npm stage approve <id>`).
+#   step "2-mcp-registry": once the version is live on npm, publish server.json to the official MCP Registry
+#                       (mcp-publisher, GitHub OIDC login: no secret, namespace io.github.tethlo).
+# dry_run (default) runs every check and `npm publish --dry-run`, and publishes nothing.
+# A version that is already on npm is skipped at step 1: bump "version" in package.json and server.json to release again.
 name: Publish
 
 on:
@@ -23,6 +26,14 @@ on:
           - recruitee
           - veeqo
           - zammad
+      step:
+        description: '1-npm-stage (then approve on npmjs.com), or 2-mcp-registry (after approval)'
+        type: choice
+        required: true
+        default: 1-npm-stage
+        options:
+          - 1-npm-stage
+          - 2-mcp-registry
       dry_run:
         description: 'Dry run: nothing is published (untick to publish)'
         type: boolean
@@ -49,26 +60,26 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - name: npm CLI with staged publishing (11.15 or newer)
+        run: npm install -g npm@11 && npm --version
       - run: npm ci --no-audit --no-fund
       - run: npm run typecheck
       - run: npm test
-      - name: Install mcp-publisher
-        if: ${{ !inputs.dry_run }}
-        run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
-          ./mcp-publisher login github-oidc
       - name: Check npm identity
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: echo "npm user for NPM_TOKEN: $(npm whoami 2>&1 || true)"
+      - name: Install mcp-publisher
+        if: ${{ !inputs.dry_run && inputs.step == '2-mcp-registry' }}
         run: |
-          echo "npm user for NPM_TOKEN: $(npm whoami 2>&1 || true)"
-          echo "Packages and scopes this token can write:"
-          npm access list packages @tethlo 2>&1 | head -20 || true
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
       - name: Publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           PACKAGE: ${{ inputs.package }}
           DRY_RUN: ${{ inputs.dry_run }}
+          STEP: ${{ inputs.step }}
         run: |
           set -euo pipefail
           if [ "$PACKAGE" = "all" ]; then
@@ -82,13 +93,21 @@ jobs:
             version=$(node -p "require('./$dir/package.json').version")
             test "$(node -p "require('./$dir/server.json').version")" = "$version"
             test "$(node -p "require('./$dir/server.json').packages[0].version")" = "$version"
-            echo "::group::$name@$version"
+            echo "::group::$name@$version ($STEP)"
             if [ "$DRY_RUN" = "true" ]; then
               (cd "$dir" && npm publish --access public --dry-run)
-            elif npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "$name@$version is already on npm: skipped (bump the version to release again)."
+            elif [ "$STEP" = "1-npm-stage" ]; then
+              if npm view "$name@$version" version >/dev/null 2>&1; then
+                echo "$name@$version is already on npm: skipped (bump the version to release again)."
+              else
+                (cd "$dir" && npm run build && npm stage publish --access public)
+                echo "::notice::$name@$version is staged. Approve it on npmjs.com (2FA), then run this workflow again with step 2-mcp-registry."
+              fi
             else
-              (cd "$dir" && npm publish --access public --provenance)
+              if ! npm view "$name@$version" version >/dev/null 2>&1; then
+                echo "::error::$name@$version is not live on npm yet: approve the staged version on npmjs.com first."
+                exit 1
+              fi
               (cd "$dir" && "$GITHUB_WORKSPACE/mcp-publisher" publish)
             fi
             echo "::endgroup::"
