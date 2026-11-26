@@ -73,7 +73,7 @@ Put it behind HTTPS before exposing it beyond your machine.
 | Variable | Required | What it is |
 |---|---|---|
 | `CLINIKO_API_KEY` | yes | Cliniko API key (My Info > Manage API keys). |
-| `CLINIKO_CONTACT_EMAIL` | no | Your email, added to the User-Agent as Cliniko asks API clients to identify themselves. |
+| `CLINIKO_CONTACT_EMAIL` | no | Contact email added to the User-Agent, as Cliniko requires API clients to identify themselves (requests without one may be blocked). Defaults to the maintainer's address, hello@tethlo.com. Cliniko allows 200 requests per minute per user. |
 | `CLINIKO_BASE_URL` | no | Override of the API base URL. Default: derived from the key, e.g. https://api.uk1.cliniko.com/v1 |
 | `CLINIKO_READ_ONLY` | no | `true` exposes only the read tools. |
 | `MCP_ACCESS_TOKEN`, `PORT`, `HOST` | HTTP mode | See remote mode above. |

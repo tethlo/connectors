@@ -57,3 +57,16 @@ test("availability is limited to 7 days per request", async () => {
   assert.match(text(await call("find_available_times", { practitioner: "Sarah", service: "Follow-up", from: "2026-11-24", to: "2026-12-10" })), /at most 7 days/);
   await close();
 });
+
+test("User-Agent always carries a contact email (Cliniko may block requests without one)", async () => {
+  let ua = "";
+  const api = apiFromEnv({ CLINIKO_API_KEY: "abc-ca1" }, {
+    fetch: async (_input: RequestInfo | URL, init?: RequestInit) => {
+      ua = new Headers(init?.headers).get("User-Agent") ?? "";
+      return new Response(JSON.stringify({ patients: [], total_entries: 0, links: {} }), { status: 200, headers: { "content-type": "application/json" } });
+    },
+    retryDelayMs: 0,
+  });
+  await api.listPractitioners().catch(() => undefined);
+  assert.match(ua, /^tethlo-mcp-for-cliniko\/\S+ \(hello@tethlo\.com\)$/);
+});
