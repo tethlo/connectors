@@ -83,9 +83,9 @@ test("README: disclaimer first, no logo, required sections, Tethlo footer", () =
   }
   assert.ok(readme.includes(`npx -y ${pkg.name}`));
   for (const name of EXPECTED_TOOLS) assert.ok(readme.includes(`\`${name}\``), `README lists ${name}`);
-  assert.equal(
-    readme.trimEnd().split("\n").at(-1),
-    "Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https://tethlo.com",
+  assert.match(
+    readme.trimEnd().split("\n").at(-1) ?? "",
+    /^Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https:\/\/tethlo\.com\/\?utm_source=connector-readme&utm_campaign=[a-z0-9-]+$/,
   );
   const files = readdirSync(root, { recursive: true }).map(String).filter((f) => !/^(node_modules|dist)([\\/]|$)/.test(f));
   assert.deepEqual(files.filter((f) => /\.(png|jpe?g|svg|ico|gif|webp)$/i.test(f)), []);

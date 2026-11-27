@@ -105,4 +105,4 @@ MIT. See [LICENSE](LICENSE); each package also carries its own MIT license file.
 
 ---
 
-Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https://tethlo.com
+Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https://tethlo.com/?utm_source=connector-readme&utm_campaign=connectors-repo

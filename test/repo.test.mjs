@@ -42,7 +42,7 @@ test('every README starts with the Unofficial disclaimer, has no forbidden words
     assert.equal(hit, null, `${slug}: forbidden word "${hit?.[0]}"`);
     assert.doesNotMatch(readme, /!\[|<img/i, `${slug}: no logos or images`);
     assert.doesNotMatch(readme, /Listed in ChatGPT/i, `${slug}: old showcase wording`);
-    assert.equal(readme.trimEnd().split('\n').at(-1), FOOTER, `${slug}: footer`);
+    assert.equal(readme.trimEnd().split('\n').at(-1), `${FOOTER}/?utm_source=connector-readme&utm_campaign=${slug}`, `${slug}: footer`);
     assert.ok(readme.includes(`npx -y @tethlo/mcp-for-${slug}`), `${slug}: npx install command`);
     if (DEMOS.includes(slug)) assert.match(readme.split('\n')[2], /\(unofficial demo\)$/, `${slug}: marked as a demo`);
   }

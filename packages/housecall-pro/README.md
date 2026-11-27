@@ -143,4 +143,4 @@ MIT
 
 ---
 
-Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https://tethlo.com
+Built by Tethlo — MCP servers, ChatGPT apps and Claude connectors for B2B SaaS · https://tethlo.com/?utm_source=connector-readme&utm_campaign=housecall-pro
